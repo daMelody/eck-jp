@@ -6,6 +6,10 @@ import javax.swing.*;
 
 public class ComplexStamper extends JPanel implements MouseListener, MouseMotionListener {
 
+	private int startX, startY;
+	private int prevX, prevY;
+	private boolean dragging;
+
 	public static void main(String[] args) {
 		JFrame window = new JFrame("Complex Stamper");
 		ComplexStamper content = new ComplexStamper();
@@ -21,6 +25,7 @@ public class ComplexStamper extends JPanel implements MouseListener, MouseMotion
 	public ComplexStamper() {
 		setBackground(Color.BLACK);
 		addMouseListener(this);
+		addMouseMotionListener(this);
 	}
 
 
@@ -29,19 +34,21 @@ public class ComplexStamper extends JPanel implements MouseListener, MouseMotion
 			repaint();
 			return;
 		}
-		int x = evt.getX(); // where mouse is clicked
-		int y = evt.getY(); // where mouse is clicked
+		startX = evt.getX(); // where mouse is clicked
+		startY = evt.getY(); // where mouse is clicked
+		prevX = startX; prevY = startY;
 		Graphics g = getGraphics();
+		// right click
 		if (SwingUtilities.isRightMouseButton(evt)) {
 			g.setColor(Color.BLUE);
-			g.fillOval(x-30,y-15,60,30);
+			g.fillOval(startX-30,startY-15,60,30);
 			g.setColor(Color.WHITE);
-			g.drawOval(x-30,y-15,60,30);
-		} else {
+			g.drawOval(startX-30,startY-15,60,30);
+		} else { // left click
 			g.setColor(Color.RED);
-			g.fillRect(x-30,y-15,60,30);
+			g.fillRect(startX-30,startY-15,60,30);
 			g.setColor(Color.WHITE);
-			g.drawRect(x-30,y-15,60,30);
+			g.drawRect(startX-30,startY-15,60,30);
 		}
 		g.dispose();
 	}
@@ -50,9 +57,37 @@ public class ComplexStamper extends JPanel implements MouseListener, MouseMotion
 	public void mouseEntered(MouseEvent evt) {}
 	public void mouseExited(MouseEvent evt) {}
 	public void mouseClicked(MouseEvent evt) {}
-	public void mouseReleased(MouseEvent evt) {}
+
+	public void mouseReleased(MouseEvent evt) {
+		if (dragging) {
+			return;
+		}
+		dragging = false;
+	}
 
 	// methods from MouseMotionListener
+	public void mouseDragged(MouseEvent evt) {
+		int x = evt.getX(); int y = evt.getY();
+		// check that DELTA in either direction is >= 5
+		if ((Math.abs(x-prevX) >= 5) || (Math.abs(y-prevY) >= 5)) {
+			Graphics g = getGraphics();  // get the graphics object
+			// right click
+			if (SwingUtilities.isRightMouseButton(evt)) {
+				g.setColor(Color.BLUE);
+				g.fillOval(x-30,y-15,60,30);
+				g.setColor(Color.WHITE);
+				g.drawOval(x-30,y-15,60,30);
+			} else {  // left click
+				g.setColor(Color.RED);
+				g.fillRect(x-30,y-15,60,30);
+				g.setColor(Color.WHITE);
+				g.drawRect(x-30,y-15,60,30);
+			}
+			g.dispose();	
+			// reassign prevX and prevY
+			prevX = x; prevY = y;
+		}
+	}	
+	
 	public void mouseMoved(MouseEvent evt) {}
-	public void mouseDragged(MouseEvent evt) {}
 }
