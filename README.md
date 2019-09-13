@@ -1,2 +1,3 @@
 # eck-jp
-exercises from the eck programming in java textbook
+
+selected exercises from the Eck Programming in Java textbook
